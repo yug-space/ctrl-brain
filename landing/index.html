@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Ctrl+Brain — your second brain, one keystroke away</title>
+<meta name="description" content="Press ⌃⇧2 anywhere. Ctrl+Brain captures text, images, and screenshots into your second brain — read on-device, synced to Supermemory."/>
+<link rel="icon" href="logo.svg"/>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+  /* minimal, centered layout */
+  .wrap{max-width:720px;margin:0 auto;padding:0 26px;text-align:center}
+  .hero-min{padding:70px 0 30px}
+  .hero-min .stage{min-height:auto;margin:0 auto 30px}
+  .hero-min .keycap{width:200px;height:200px}
+  .hero-min h1.title{margin:0 auto}
+  .hero-min .lede{margin:20px auto 0}
+  .hero-min .hero-cta{justify-content:center}
+  .hero-min .cmd{margin:18px auto 0}
+  .flowline{margin:40px auto 0;max-width:680px;font-size:12.5px;line-height:1.4;text-align:left}
+  footer .fmin{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  @media(max-width:880px){.hero-min .keycap{width:170px;height:170px}}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g id="logo">
+    <rect x="64" y="64" width="384" height="384" rx="100" fill="#20232B"/>
+    <rect x="86" y="72" width="340" height="330" rx="78" fill="#2C313C"/>
+    <path d="M200 256 C184 256 174 240 184 228 C166 222 166 198 186 194 C182 174 206 164 220 178 C226 160 250 160 256 176 C262 160 286 160 292 178 C306 164 330 174 326 194 C346 198 346 222 328 228 C338 240 328 256 312 256 C314 272 288 280 276 268 C266 280 246 280 236 268 C224 280 198 272 200 256 Z" fill="#EFEDE6"/>
+    <g fill="none" stroke="#2C313C" stroke-width="9" stroke-linecap="round">
+      <path d="M256 180 C248 202 262 218 252 238"/><path d="M216 202 C208 210 210 224 222 226"/><path d="M296 202 C304 210 302 224 290 226"/>
+    </g>
+    <text x="256" y="336" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="30" letter-spacing="3" fill="#888FA1">ctrl <tspan fill="#E6A93C">+</tspan></text>
+  </g>
+</defs></svg>
+
+<header class="nav"><div class="container nav-in">
+  <a class="brand" href="#"><svg viewBox="0 0 512 512"><use href="#logo"/></svg> ctrl<span class="p">+</span>brain</a>
+  <div class="nav-right">
+    <span class="kbd">⌃⇧2</span>
+    <a class="btn btn-primary" href="#get">Download <span class="arr">→</span></a>
+  </div>
+</div></header>
+
+<main>
+<section class="hero-min"><div class="wrap">
+
+  <div class="stage">
+    <svg class="keycap" viewBox="0 0 512 512" id="keycap">
+      <defs>
+        <linearGradient id="cap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#30353F"/><stop offset="1" stop-color="#181B22"/></linearGradient>
+        <clipPath id="bclip"><path d="M200 256 C184 256 174 240 184 228 C166 222 166 198 186 194 C182 174 206 164 220 178 C226 160 250 160 256 176 C262 160 286 160 292 178 C306 164 330 174 326 194 C346 198 346 222 328 228 C338 240 328 256 312 256 C314 272 288 280 276 268 C266 280 246 280 236 268 C224 280 198 272 200 256 Z"/></clipPath>
+        <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter>
+      </defs>
+      <rect x="40" y="44" width="432" height="432" rx="116" fill="#101218" stroke="rgba(255,255,255,.06)"/>
+      <rect x="66" y="58" width="380" height="380" rx="94" fill="url(#cap)" stroke="rgba(255,255,255,.09)"/>
+      <rect x="66" y="58" width="380" height="380" rx="94" fill="rgba(230,169,60,.05)"/>
+      <path d="M200 256 C184 256 174 240 184 228 C166 222 166 198 186 194 C182 174 206 164 220 178 C226 160 250 160 256 176 C262 160 286 160 292 178 C306 164 330 174 326 194 C346 198 346 222 328 228 C338 240 328 256 312 256 C314 272 288 280 276 268 C266 280 246 280 236 268 C224 280 198 272 200 256 Z" fill="#EFEDE6"/>
+      <g fill="none" stroke="#23262F" stroke-width="9" stroke-linecap="round"><path d="M256 180 C248 202 262 218 252 238"/><path d="M216 202 C208 210 210 224 222 226"/><path d="M296 202 C304 210 302 224 290 226"/></g>
+      <g clip-path="url(#bclip)"><rect x="150" width="220" height="22" fill="#E6A93C" opacity=".6" filter="url(#soft)"><animate attributeName="y" values="150;300;150" dur="3.4s" repeatCount="indefinite"/></rect></g>
+      <text x="256" y="346" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="30" letter-spacing="3" fill="#9AA0AE">ctrl <tspan fill="#E6A93C">+</tspan></text>
+    </svg>
+  </div>
+
+  <span class="tag"><span class="dot"></span> Local-first · macOS menu bar</span>
+  <h1 class="title">Your second brain,<br/><span class="grad">one keystroke</span> away.</h1>
+  <p class="lede">Press <b>⌃⇧2</b> anywhere. Ctrl+Brain captures the selected text, image, or screenshot — reads it <b>on your Mac</b> — and saves it to one editable second brain, synced to Supermemory.</p>
+
+  <div class="hero-cta" id="get">
+    <a class="btn btn-primary btn-lg" href="#get">Download for macOS <span class="arr">→</span></a>
+    <a class="btn btn-ghost btn-lg" href="https://github.com" target="_blank" rel="noopener">View source</a>
+  </div>
+  <div class="cmd"><span><span class="d">$</span> chmod +x build.sh &amp;&amp; ./build.sh</span><span class="copy" data-copy="chmod +x build.sh && ./build.sh">⧉</span></div>
+  <div class="trust">clang build · ~44 MB idle · Apple Silicon &amp; Intel</div>
+
+  <div class="ascii flowline"><pre><span class="g">select</span>  <span class="a">──▶</span>  <span class="w">⌃⇧2</span>  <span class="a">──▶</span>  <span class="w">vision OCR + describe</span>  <span class="a">──▶</span>  <span class="w">.mdx</span> <span class="a">+</span> <span class="w">supermemory</span></pre></div>
+
+</div></section>
+</main>
+
+<footer><div class="container">
+  <div class="fmin">
+    <div class="fbrand"><svg viewBox="0 0 512 512"><use href="#logo"/></svg> ctrl<span class="p">+</span>brain</div>
+    <span style="color:var(--faint);font-family:var(--mono);font-size:13px">© 2026 · built on macOS · ⌃⇧2</span>
+  </div>
+</div></footer>
+
+<script>
+document.querySelectorAll('[data-copy]').forEach(function(c){
+  c.addEventListener('click',function(){
+    navigator.clipboard&&navigator.clipboard.writeText(c.dataset.copy);
+    var t=c.textContent;c.textContent='✓';setTimeout(function(){c.textContent=t},1100);
+  });
+});
+var kc=document.getElementById('keycap');
+if(kc)kc.addEventListener('click',function(){kc.style.transition='transform .12s';kc.style.transform='translateY(10px) scale(.985)';setTimeout(function(){kc.style.transform=''},150)});
+</script>
+</body>
+</html>
