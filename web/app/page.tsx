@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { Logo } from "@/components/Logo";
+import { Mockup, ICONS } from "@/components/Mockup";
 
 const GITHUB = "https://github.com/yug-space/ctrl-brain";
 
@@ -9,17 +9,19 @@ export default function Home() {
       <header className="nav">
         <div className="wrap nav-in">
           <a className="brand" href="#top">
-            <Logo size={30} />
-            ctrl<span className="p">+</span>brain
+            <Logo size={38} />
+            <span className="wm">ctrl<span className="p">+</span>brain</span>
           </a>
           <nav className="nav-links">
-            <a href="#capture">What it does</a>
+            <a href="#showcase">What it does</a>
             <a href="#how">How it works</a>
-            <a href={GITHUB} target="_blank" rel="noopener">GitHub</a>
           </nav>
-          <a className="btn btn-solid" href={GITHUB} target="_blank" rel="noopener">
-            Download <span className="a">→</span>
-          </a>
+          <div className="nav-cta">
+            <a className="btn btn-line" href={GITHUB} target="_blank" rel="noopener">GitHub ↗</a>
+            <a className="btn btn-solid" href={GITHUB} target="_blank" rel="noopener">
+              Download <span className="a">→</span>
+            </a>
+          </div>
         </div>
       </header>
 
@@ -27,27 +29,65 @@ export default function Home() {
         {/* hero */}
         <section className="hero">
           <div className="wrap">
-            <Image className="kc" src="/logo.svg" alt="Ctrl+Brain" width={96} height={96} priority />
-            <p className="eyebrow" style={{ marginBottom: 22 }}>macOS · local-first</p>
+            <Logo className="kc" size={74} />
+            <p className="eyebrow" style={{ marginBottom: 20 }}>macOS · local-first</p>
             <h1 className="display">
               Your second brain,<br /><em>one keystroke</em> away.
             </h1>
+            <div className="keys" aria-label="Control + Shift + 2">
+              <span className="key"><b>⌃</b><i>control</i></span>
+              <span className="op">+</span>
+              <span className="key"><b>⇧</b><i>shift</i></span>
+              <span className="op">+</span>
+              <span className="key"><b>2</b><i>two</i></span>
+            </div>
             <p className="lede">
-              Press <span className="kbd">⌃⇧2</span> anywhere. Ctrl+Brain captures the text, image, or
-              screenshot in front of you — reads it <b>on your Mac</b> — and files it into one editable
-              second brain, synced to Supermemory.
+              Press it anywhere — Ctrl+Brain captures the text, image, or screenshot in front of you,
+              reads it <b>on your Mac</b>, and saves it to your second brain.
             </p>
             <div className="cta">
               <a className="btn btn-solid" href={GITHUB} target="_blank" rel="noopener">
                 Download for macOS <span className="a">→</span>
               </a>
-              <a className="btn btn-line" href={GITHUB} target="_blank" rel="noopener">View source ↗</a>
+              <a className="btn btn-line" href={GITHUB} target="_blank" rel="noopener">GitHub ↗</a>
             </div>
-            <div className="cmd">
-              <span><span className="d">$</span> chmod +x build.sh &amp;&amp; ./build.sh</span>
-              <span>⌃⇧2</span>
+          </div>
+        </section>
+
+        {/* showcase — the capture card, light + dark */}
+        <section id="showcase" className="wrap">
+          <div className="slab">
+            <div>
+              <p className="eyebrow">The capture</p>
+              <h2 className="sec-h">One card. Everything you saved.</h2>
             </div>
-            <p className="note">clang build · ~44 MB idle · Apple Silicon &amp; Intel</p>
+            <p className="eyebrow">light · dark</p>
+          </div>
+          <div className="showcase">
+            <Mockup
+              variant="light"
+              date="May 30" time="5:00 PM"
+              title="Highlighted from arXiv"
+              desc="Selected text, read and filed into your second brain."
+              rows={[
+                { icon: <ICONS.IconInbox />, label: "Highlighted text", on: true },
+                { icon: <ICONS.IconGrid />, label: "Screenshot" },
+                { icon: <ICONS.IconFlask />, label: "Image · OCR" },
+                { icon: <ICONS.IconMega />, label: "Synced to Supermemory" },
+              ]}
+            />
+            <Mockup
+              variant="dark"
+              date="May 30" time="5:00 PM"
+              title="Understood on-device"
+              desc="Apple Vision OCRs the pixels; a local model describes them."
+              rows={[
+                { icon: <ICONS.IconRoute />, label: "Routing variables" },
+                { icon: <ICONS.IconAnchor />, label: "Risk parameters" },
+                { icon: <ICONS.IconLock />, label: "Authorization limits" },
+                { icon: <ICONS.IconMega />, label: "Synced to Supermemory" },
+              ]}
+            />
           </div>
         </section>
 
@@ -93,7 +133,7 @@ export default function Home() {
           <div className="wrap">
             <div className="slab" style={{ paddingTop: 64 }}>
               <div>
-                <h2>How it works</h2>
+                <h2 className="sec-h">How it works</h2>
                 <p className="sub">Select, press, understand, remember — and the file stays yours, in plain Markdown.</p>
               </div>
             </div>
@@ -107,7 +147,7 @@ export default function Home() {
 
       <footer>
         <div className="wrap foot">
-          <a className="brand" href="#top"><Logo size={26} /> ctrl<span className="p">+</span>brain</a>
+          <a className="brand" href="#top"><Logo size={28} /><span className="wm">ctrl<span className="p">+</span>brain</span></a>
           <div className="links">
             <a href={GITHUB} target="_blank" rel="noopener">GitHub</a>
             <a href="https://supermemory.ai" target="_blank" rel="noopener">Supermemory</a>

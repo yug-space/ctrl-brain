@@ -25,7 +25,7 @@ fi
 
 clang -fobjc-arc -o "$APP/Contents/MacOS/$EXEC" \
     main.m AppDelegate.m \
-    -framework Cocoa -framework ApplicationServices -framework Carbon -framework Vision
+    -framework Cocoa -framework QuartzCore -framework ApplicationServices -framework Carbon -framework Vision
 
 # Sign with a stable self-signed identity if present, so macOS keeps the
 # Accessibility/Screen Recording grants across rebuilds (the designated

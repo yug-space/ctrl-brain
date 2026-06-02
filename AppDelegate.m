@@ -1,4 +1,5 @@
 #import "AppDelegate.h"
+#import <QuartzCore/QuartzCore.h>
 #import <ApplicationServices/ApplicationServices.h>
 #import <Carbon/Carbon.h>
 #import <Vision/Vision.h>
@@ -213,7 +214,8 @@ static BOOL CBIsMetaLine(NSString *t) {
 @property (strong) NSTextField *containerTagField;
 @property (strong) NSSecureTextField *apiKeyField;
 @property (strong) NSWindow *onboardingWindow;
-@property (strong) NSSecureTextField *onboardKeyField;
+@property (strong) NSTextField *onboardKeyField;
+@property (strong) NSTextField *onboardContainerField;
 @property (strong) NSButton *shortcutButton;
 @property (strong) id shortcutMonitor;
 @property (assign) BOOL recordingShortcut;
@@ -252,6 +254,11 @@ static BOOL CBIsMetaLine(NSString *t) {
     [menu addItemWithTitle:@"Quit" action:@selector(terminate:) keyEquivalent:@"q"];
     self.statusItem.menu = menu;
 
+    // Hidden main menu with a standard Edit submenu. Accessory (menu-bar) apps
+    // have no menu bar, so ⌘V/⌘C/⌘X/⌘A would otherwise never reach the focused
+    // text field. Installing this routes the standard editing key-equivalents.
+    [self installEditMenu];
+
     [self ensureAccessibilityPrompt];
     [self registerHotKey];
     [self ensureCaptureDir];
@@ -264,6 +271,23 @@ static BOOL CBIsMetaLine(NSString *t) {
     if (![NSUserDefaults.standardUserDefaults boolForKey:kOnboardedDefaultsKey]) {
         [self showOnboarding];
     }
+}
+
+- (void)installEditMenu {
+    NSMenu *mainMenu = [[NSMenu alloc] init];
+    NSMenuItem *editItem = [[NSMenuItem alloc] init];
+    [mainMenu addItem:editItem];
+    NSMenu *editMenu = [[NSMenu alloc] initWithTitle:@"Edit"];
+    [editMenu addItemWithTitle:@"Undo" action:@selector(undo:) keyEquivalent:@"z"];
+    NSMenuItem *redo = [editMenu addItemWithTitle:@"Redo" action:@selector(redo:) keyEquivalent:@"z"];
+    redo.keyEquivalentModifierMask = NSEventModifierFlagCommand | NSEventModifierFlagShift;
+    [editMenu addItem:[NSMenuItem separatorItem]];
+    [editMenu addItemWithTitle:@"Cut" action:@selector(cut:) keyEquivalent:@"x"];
+    [editMenu addItemWithTitle:@"Copy" action:@selector(copy:) keyEquivalent:@"c"];
+    [editMenu addItemWithTitle:@"Paste" action:@selector(paste:) keyEquivalent:@"v"];
+    [editMenu addItemWithTitle:@"Select All" action:@selector(selectAll:) keyEquivalent:@"a"];
+    editItem.submenu = editMenu;
+    NSApp.mainMenu = mainMenu;
 }
 
 // Reopening the app (e.g. launching it again from Finder) brings up the window.
@@ -1317,16 +1341,88 @@ static BOOL CBIsMetaLine(NSString *t) {
     return b;
 }
 
+// Elegant serif (New York), matching the editorial headings in the brand. Falls back to Georgia.
+- (NSFont *)serifFont:(CGFloat)size weight:(NSFontWeight)w {
+    NSFont *base = [NSFont systemFontOfSize:size weight:w];
+    if (@available(macOS 11.0, *)) {
+        NSFontDescriptor *d = [base.fontDescriptor fontDescriptorWithDesign:NSFontDescriptorSystemDesignSerif];
+        if (d) { NSFont *f = [NSFont fontWithDescriptor:d size:size]; if (f) return f; }
+    }
+    NSFont *g = [NSFont fontWithName:@"Georgia" size:size];
+    return g ?: base;
+}
+
+// A solid, layer-backed rounded button (no chunky system bezel).
+- (NSButton *)filledButton:(NSString *)title action:(SEL)sel bg:(NSColor *)bg fg:(NSColor *)fg {
+    NSButton *b = [NSButton buttonWithTitle:@"" target:self action:sel];
+    b.bordered = NO;
+    b.wantsLayer = YES;
+    b.layer.backgroundColor = bg.CGColor;
+    b.layer.cornerRadius = 12;
+    b.layer.masksToBounds = YES;
+    NSMutableParagraphStyle *ps = [[NSMutableParagraphStyle alloc] init];
+    ps.alignment = NSTextAlignmentCenter;
+    b.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:@{
+        NSForegroundColorAttributeName: fg,
+        NSFontAttributeName: [NSFont systemFontOfSize:15 weight:NSFontWeightSemibold],
+        NSParagraphStyleAttributeName: ps }];
+    return b;
+}
+
+// A feature row: line-icon + label. Highlighted row gets the iridescent sweep.
+- (NSView *)onboardRow:(NSString *)title symbol:(NSString *)sym highlight:(BOOL)hl frame:(NSRect)f {
+    NSView *row = [[NSView alloc] initWithFrame:f];
+    row.wantsLayer = YES;
+    row.layer.cornerRadius = 13;
+    row.layer.masksToBounds = YES;
+    NSColor *txt, *icn;
+    if (hl) {
+        CAGradientLayer *g = [CAGradientLayer layer];
+        g.frame = row.bounds;
+        g.startPoint = CGPointMake(0, 0.5);
+        g.endPoint = CGPointMake(1, 0.5);
+        g.colors = @[(id)CBColor(246, 212, 233, 1).CGColor,
+                     (id)CBColor(223, 216, 244, 1).CGColor,
+                     (id)CBColor(207, 232, 244, 1).CGColor,
+                     (id)CBColor(211, 242, 226, 1).CGColor,
+                     (id)CBColor(243, 238, 203, 1).CGColor,
+                     (id)CBColor(248, 220, 207, 1).CGColor];
+        [row.layer addSublayer:g];
+        txt = CBColor(21, 17, 10, 1); icn = CBColor(21, 17, 10, 1);
+    } else {
+        row.layer.backgroundColor = CBColor(22, 23, 28, 1).CGColor;
+        row.layer.borderWidth = 1;
+        row.layer.borderColor = CBColor(255, 255, 255, 0.07).CGColor;
+        txt = CBColor(214, 215, 221, 1); icn = CBColor(140, 142, 152, 1);
+    }
+    NSImageView *iv = [[NSImageView alloc] initWithFrame:NSMakeRect(16, (f.size.height - 24) / 2, 24, 24)];
+    if (@available(macOS 11.0, *)) {
+        NSImage *img = [NSImage imageWithSystemSymbolName:sym accessibilityDescription:nil];
+        NSImageSymbolConfiguration *cfg = [NSImageSymbolConfiguration configurationWithPointSize:16 weight:NSFontWeightRegular];
+        iv.image = [img imageWithSymbolConfiguration:cfg];
+        iv.contentTintColor = icn;
+    }
+    [row addSubview:iv];
+    NSTextField *lab = [self settingsLabel:title
+                                      font:[NSFont systemFontOfSize:14.5 weight:NSFontWeightMedium]
+                                     color:txt];
+    lab.maximumNumberOfLines = 1;
+    lab.frame = NSMakeRect(52, (f.size.height - 20) / 2, f.size.width - 68, 20);
+    [row addSubview:lab];
+    return row;
+}
+
 - (void)showOnboarding {
     if (!self.onboardingWindow) [self buildOnboardingWindow];
     self.onboardKeyField.stringValue = CBApiKey();
+    self.onboardContainerField.stringValue = CBContainerTag();
     [NSApp activateIgnoringOtherApps:YES];
     [self.onboardingWindow center];
     [self.onboardingWindow makeKeyAndOrderFront:nil];
 }
 
 - (void)buildOnboardingWindow {
-    CGFloat W = 520, H = 560, ix = 48, iw = W - 96;
+    CGFloat W = 460, H = 452, ix = 36, iw = W - 72;
     NSRect frame = NSMakeRect(0, 0, W, H);
     self.onboardingWindow = [[NSWindow alloc] initWithContentRect:frame
                                                         styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskFullSizeContentView)
@@ -1334,82 +1430,72 @@ static BOOL CBIsMetaLine(NSString *t) {
                                                             defer:NO];
     self.onboardingWindow.titlebarAppearsTransparent = YES;
     self.onboardingWindow.titleVisibility = NSWindowTitleHidden;
+    self.onboardingWindow.movableByWindowBackground = YES;
     self.onboardingWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
-    self.onboardingWindow.backgroundColor = CBColor(14, 14, 17, 1.0);
+    self.onboardingWindow.backgroundColor = CBColor(13, 13, 16, 1.0);
     self.onboardingWindow.delegate = self;
     [self.onboardingWindow setReleasedWhenClosed:NO];
 
     NSView *root = self.onboardingWindow.contentView;
 
-    NSImageView *iv = [[NSImageView alloc] initWithFrame:NSMakeRect((W - 76) / 2, 430, 76, 76)];
+    // Settings gear (top-right) — edit these anytime.
+    NSButton *gear = [NSButton buttonWithTitle:@"" target:self action:@selector(showSettings:)];
+    gear.bordered = NO;
+    gear.frame = NSMakeRect(W - 44, H - 42, 24, 24);
+    if (@available(macOS 11.0, *)) {
+        NSImage *g = [NSImage imageWithSystemSymbolName:@"gearshape" accessibilityDescription:@"Settings"];
+        NSImageSymbolConfiguration *cfg = [NSImageSymbolConfiguration configurationWithPointSize:15 weight:NSFontWeightRegular];
+        gear.image = [g imageWithSymbolConfiguration:cfg];
+        gear.contentTintColor = CBColor(120, 122, 132, 1.0);
+        gear.imagePosition = NSImageOnly;
+    } else {
+        gear.title = @"⚙";
+    }
+    [root addSubview:gear];
+
+    // Logo chip, centered.
+    NSImageView *iv = [[NSImageView alloc] initWithFrame:NSMakeRect((W - 66) / 2, 336, 66, 66)];
     NSString *logoPath = [[NSBundle mainBundle].resourcePath stringByAppendingPathComponent:@"logo.svg"];
     NSImage *logo = [[NSImage alloc] initWithContentsOfFile:logoPath];
-    if (logo) { logo.size = NSMakeSize(76, 76); iv.image = logo; iv.wantsLayer = YES;
-        iv.layer.cornerRadius = 17; iv.layer.masksToBounds = YES;
+    if (logo) { logo.size = NSMakeSize(66, 66); iv.image = logo; iv.wantsLayer = YES;
+        iv.layer.cornerRadius = 16; iv.layer.masksToBounds = YES;
         iv.layer.borderWidth = 1; iv.layer.borderColor = CBColor(255, 255, 255, 0.10).CGColor; }
     [root addSubview:iv];
 
-    NSTextField *title = [self settingsLabel:@"Welcome to Ctrl+Brain"
-                                        font:[NSFont systemFontOfSize:27 weight:NSFontWeightBold]
-                                       color:CBColor(247, 247, 248, 1.0)];
-    title.alignment = NSTextAlignmentCenter;
-    title.frame = NSMakeRect(ix, 378, iw, 34);
-    [root addSubview:title];
-
-    NSTextField *sub = [self settingsLabel:@"Press ⌃⇧2 anywhere to capture text, images, and screenshots into your private second brain — read on-device, synced to Supermemory."
-                                      font:[NSFont systemFontOfSize:14.5 weight:NSFontWeightRegular]
-                                     color:CBColor(150, 152, 162, 1.0)];
-    sub.alignment = NSTextAlignmentCenter;
-    sub.maximumNumberOfLines = 4;
-    sub.frame = NSMakeRect(ix + 6, 300, iw - 12, 70);
-    [root addSubview:sub];
-
-    NSTextField *akLabel = [self settingsLabel:@"Your Supermemory API key"
-                                          font:[NSFont systemFontOfSize:13 weight:NSFontWeightSemibold]
-                                         color:CBColor(222, 222, 228, 1.0)];
-    akLabel.frame = NSMakeRect(ix, 270, iw, 18);
+    // API key.
+    NSTextField *akLabel = [self settingsLabel:@"SUPERMEMORY API KEY"
+                                          font:[NSFont systemFontOfSize:10.5 weight:NSFontWeightSemibold]
+                                         color:CBColor(132, 134, 144, 1.0)];
+    akLabel.frame = NSMakeRect(ix + 2, 296, iw, 14);
     [root addSubview:akLabel];
 
-    // Flat, custom-styled field (no blue focus-ring pill).
-    NSView *fieldBox = [[NSView alloc] initWithFrame:NSMakeRect(ix, 216, iw, 44)];
-    fieldBox.wantsLayer = YES;
-    fieldBox.layer.backgroundColor = CBColor(24, 25, 30, 1.0).CGColor;
-    fieldBox.layer.cornerRadius = 11;
-    fieldBox.layer.borderWidth = 1;
-    fieldBox.layer.borderColor = CBColor(255, 255, 255, 0.12).CGColor;
-    [root addSubview:fieldBox];
-
-    self.onboardKeyField = [[NSSecureTextField alloc] initWithFrame:NSMakeRect(15, 11, iw - 30, 22)];
-    self.onboardKeyField.bezeled = NO;
-    self.onboardKeyField.drawsBackground = NO;
-    self.onboardKeyField.focusRingType = NSFocusRingTypeNone;
-    self.onboardKeyField.font = [NSFont systemFontOfSize:15];
-    self.onboardKeyField.textColor = CBColor(236, 236, 239, 1.0);
+    self.onboardKeyField = [[NSTextField alloc] init];
     self.onboardKeyField.placeholderString = @"sm_…";
-    [fieldBox addSubview:self.onboardKeyField];
+    [root addSubview:[self flatFieldBox:self.onboardKeyField frame:NSMakeRect(ix, 248, iw, 44)]];
 
-    NSButton *getKey = [self linkButton:@"Don’t have one?  Get a free key at supermemory.ai  ↗"
-                                 action:@selector(openSupermemorySite:)
-                                  color:CBColor(230, 169, 60, 1.0)];
-    getKey.frame = NSMakeRect(ix, 176, iw, 20);
-    [root addSubview:getKey];
+    // Container tag.
+    NSTextField *ctLabel = [self settingsLabel:@"CONTAINER TAG"
+                                          font:[NSFont systemFontOfSize:10.5 weight:NSFontWeightSemibold]
+                                         color:CBColor(132, 134, 144, 1.0)];
+    ctLabel.frame = NSMakeRect(ix + 2, 214, iw, 14);
+    [root addSubview:ctLabel];
 
-    NSButton *start = [self amberButton:@"Start capturing  →" action:@selector(finishOnboarding:)];
-    start.frame = NSMakeRect(ix, 104, iw, 46);
+    self.onboardContainerField = [[NSTextField alloc] init];
+    self.onboardContainerField.placeholderString = @"my-second-brain";
+    [root addSubview:[self flatFieldBox:self.onboardContainerField frame:NSMakeRect(ix, 166, iw, 44)]];
+
+    // Primary action.
+    NSButton *start = [self filledButton:@"Start capturing  →" action:@selector(finishOnboarding:)
+                                      bg:CBColor(79, 70, 229, 1.0) fg:CBColor(255, 255, 255, 1.0)];
+    start.frame = NSMakeRect(ix, 96, iw, 50);
     start.keyEquivalent = @"\r";
     [root addSubview:start];
 
-    NSButton *later = [self linkButton:@"I’ll add it later" action:@selector(skipOnboarding:)
-                                 color:CBColor(140, 142, 152, 1.0)];
-    later.frame = NSMakeRect(ix, 64, iw, 20);
-    [root addSubview:later];
-
-    NSTextField *foot = [self settingsLabel:@"Change it anytime in Settings · ⌘,"
-                                       font:[NSFont monospacedSystemFontOfSize:11 weight:NSFontWeightRegular]
-                                      color:CBColor(94, 98, 110, 1.0)];
-    foot.alignment = NSTextAlignmentCenter;
-    foot.frame = NSMakeRect(ix, 30, iw, 16);
-    [root addSubview:foot];
+    NSButton *getKey = [self linkButton:@"Get a free key at supermemory.ai  ↗"
+                                 action:@selector(openSupermemorySite:)
+                                  color:CBColor(159, 156, 240, 1.0)];
+    getKey.frame = NSMakeRect(ix, 60, iw, 18);
+    [root addSubview:getKey];
 }
 
 - (void)openSupermemorySite:(id)sender {
@@ -1419,8 +1505,10 @@ static BOOL CBIsMetaLine(NSString *t) {
 
 - (void)finishOnboarding:(id)sender {
     (void)sender;
-    NSString *k = self.onboardKeyField.stringValue;
+    NSString *k = [self.onboardKeyField.stringValue stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
     if (k.length) CBSetApiKey(k);
+    NSString *tag = [self.onboardContainerField.stringValue stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    if (tag.length) { CBSetContainerTag(tag); [self applyContainerTagToBrainFile]; }
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kOnboardedDefaultsKey];
     [self.onboardingWindow close];
     [self notify:@"Ready — press your shortcut"];
