@@ -23,6 +23,12 @@ if [ -f assets/AppIcon.icns ]; then
     cp assets/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 fi
 
+# Bundle the web fonts (Instrument Serif + Space Grotesk) so the app matches the site.
+if [ -d assets/fonts ]; then
+    mkdir -p "$APP/Contents/Resources/fonts"
+    cp assets/fonts/*.ttf "$APP/Contents/Resources/fonts/" 2>/dev/null || true
+fi
+
 clang -fobjc-arc -o "$APP/Contents/MacOS/$EXEC" \
     main.m AppDelegate.m \
     -framework Cocoa -framework QuartzCore -framework ApplicationServices -framework Carbon -framework Vision

@@ -46,6 +46,9 @@ First run requires macOS permissions (granted once, then they stick):
 - **Screen Recording** — only for the screenshot picker.
 - **Automation** (optional) — source-URL detection in Safari / Chrome / Arc.
 
+After the first run, Ctrl+Brain installs a per-user LaunchAgent so it starts
+automatically in the background when you log in to your Mac.
+
 ## Settings
 
 Menu-bar icon → **Settings…** (or ⌘,):

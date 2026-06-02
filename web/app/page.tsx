@@ -1,5 +1,4 @@
 import { Logo } from "@/components/Logo";
-import { Mockup, ICONS } from "@/components/Mockup";
 
 const GITHUB = "https://github.com/yug-space/ctrl-brain";
 
@@ -13,7 +12,7 @@ export default function Home() {
             <span className="wm">ctrl<span className="p">+</span>brain</span>
           </a>
           <nav className="nav-links">
-            <a href="#showcase">What it does</a>
+            <a href="#capture">What it does</a>
             <a href="#how">How it works</a>
           </nav>
           <div className="nav-cta">
@@ -51,43 +50,6 @@ export default function Home() {
               </a>
               <a className="btn btn-line" href={GITHUB} target="_blank" rel="noopener">GitHub ↗</a>
             </div>
-          </div>
-        </section>
-
-        {/* showcase — the capture card, light + dark */}
-        <section id="showcase" className="wrap">
-          <div className="slab">
-            <div>
-              <p className="eyebrow">The capture</p>
-              <h2 className="sec-h">One card. Everything you saved.</h2>
-            </div>
-            <p className="eyebrow">light · dark</p>
-          </div>
-          <div className="showcase">
-            <Mockup
-              variant="light"
-              date="May 30" time="5:00 PM"
-              title="Highlighted from arXiv"
-              desc="Selected text, read and filed into your second brain."
-              rows={[
-                { icon: <ICONS.IconInbox />, label: "Highlighted text", on: true },
-                { icon: <ICONS.IconGrid />, label: "Screenshot" },
-                { icon: <ICONS.IconFlask />, label: "Image · OCR" },
-                { icon: <ICONS.IconMega />, label: "Synced to Supermemory" },
-              ]}
-            />
-            <Mockup
-              variant="dark"
-              date="May 30" time="5:00 PM"
-              title="Understood on-device"
-              desc="Apple Vision OCRs the pixels; a local model describes them."
-              rows={[
-                { icon: <ICONS.IconRoute />, label: "Routing variables" },
-                { icon: <ICONS.IconAnchor />, label: "Risk parameters" },
-                { icon: <ICONS.IconLock />, label: "Authorization limits" },
-                { icon: <ICONS.IconMega />, label: "Synced to Supermemory" },
-              ]}
-            />
           </div>
         </section>
 
