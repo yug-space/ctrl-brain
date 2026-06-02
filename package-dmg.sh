@@ -37,6 +37,13 @@ rm -rf "$STAGING_DIR"
 mkdir -p "$STAGING_DIR" "$OUTPUT_DIR"
 cp -R "$APP" "$STAGING_DIR/"
 ln -s /Applications "$STAGING_DIR/Applications"
+cat > "$STAGING_DIR/Install.txt" <<'EOF'
+Install Ctrl+Brain
+
+Drag Ctrl+Brain.app into Applications, then open it from Applications.
+
+On first launch, macOS will ask for Accessibility and Screen Recording permissions. Ctrl+Brain uses them to read selections, press copy, and capture screenshots.
+EOF
 
 rm -f "$OUTPUT_DIR/$DMG_NAME"
 hdiutil create \

@@ -1,6 +1,8 @@
 import { Logo } from "@/components/Logo";
 
 const GITHUB = "https://github.com/yug-space/ctrl-brain";
+const DOWNLOAD =
+  "https://github.com/yug-space/ctrl-brain/releases/latest/download/Ctrl+Brain-1.0.dmg";
 
 export default function Home() {
   return (
@@ -17,7 +19,7 @@ export default function Home() {
           </nav>
           <div className="nav-cta">
             <a className="btn btn-line" href={GITHUB} target="_blank" rel="noopener">GitHub ↗</a>
-            <a className="btn btn-solid" href={GITHUB} target="_blank" rel="noopener">
+            <a className="btn btn-solid" href={DOWNLOAD}>
               Download <span className="a">→</span>
             </a>
           </div>
@@ -45,7 +47,7 @@ export default function Home() {
               reads it <b>on your Mac</b>, and saves it to your second brain.
             </p>
             <div className="cta">
-              <a className="btn btn-solid" href={GITHUB} target="_blank" rel="noopener">
+              <a className="btn btn-solid" href={DOWNLOAD}>
                 Download for macOS <span className="a">→</span>
               </a>
               <a className="btn btn-line" href={GITHUB} target="_blank" rel="noopener">GitHub ↗</a>

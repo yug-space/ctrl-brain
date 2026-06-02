@@ -71,6 +71,7 @@ static NSString *CBDotEnvValue(NSString *key) {
 
 static NSString *const kApiKeyDefaultsKey = @"CBApiKey";
 static NSString *const kOnboardedDefaultsKey = @"CBOnboarded";
+static NSString *const kPermissionsPromptedDefaultsKey = @"CBPermissionsPrompted";
 
 static NSString *SupermemoryAPIKey(void) {
     NSString *key = NSProcessInfo.processInfo.environment[@"SUPERMEMORY_API_KEY"];
@@ -306,6 +307,7 @@ static BOOL CBIsMetaLine(NSString *t) {
     [self installEditMenu];
 
     [self ensureAccessibilityPrompt];
+    [self requestFirstLaunchPermissionsIfNeeded];
     [self registerHotKey];
     [self ensureCaptureDir];
     [self notify:@"Ctrl+Brain ready"];
@@ -450,6 +452,44 @@ static BOOL CBIsMetaLine(NSString *t) {
     BOOL trusted = AXIsProcessTrustedWithOptions((__bridge CFDictionaryRef)opts);
     if (!trusted) {
         NSLog(@"Ctrl+Brain: Accessibility not yet granted; hotkey capture is limited until enabled.");
+    }
+}
+
+- (void)ensureScreenRecordingPrompt {
+    if (@available(macOS 10.15, *)) {
+        if (!CGPreflightScreenCaptureAccess()) {
+            CGRequestScreenCaptureAccess();
+        }
+    }
+}
+
+- (void)openPrivacySettings {
+    NSArray<NSString *> *panes = @[
+        @"x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility",
+        @"x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture",
+        @"x-apple.systempreferences:com.apple.preference.security?Privacy_Automation"
+    ];
+    for (NSString *pane in panes) {
+        [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:pane]];
+    }
+}
+
+- (void)requestFirstLaunchPermissionsIfNeeded {
+    if ([NSUserDefaults.standardUserDefaults boolForKey:kPermissionsPromptedDefaultsKey]) return;
+    [NSUserDefaults.standardUserDefaults setBool:YES forKey:kPermissionsPromptedDefaultsKey];
+
+    [self ensureAccessibilityPrompt];
+    [self ensureScreenRecordingPrompt];
+
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = @"Enable Ctrl+Brain permissions";
+    alert.informativeText =
+        @"Ctrl+Brain needs Accessibility to read selections and press copy, Screen Recording for screenshot capture, and Automation when it attaches browser URLs. Enable them in Privacy & Security when macOS asks.";
+    [alert addButtonWithTitle:@"Open Privacy Settings"];
+    [alert addButtonWithTitle:@"Continue"];
+
+    if ([alert runModal] == NSAlertFirstButtonReturn) {
+        [self openPrivacySettings];
     }
 }
 

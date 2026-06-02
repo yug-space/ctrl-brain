@@ -1,15 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Instrument_Serif } from "next/font/google";
 import "./globals.css";
-
-const sans = Space_Grotesk({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
-const serif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-serif",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Ctrl+Brain — your second brain, one keystroke away",
@@ -28,7 +18,7 @@ export const viewport = { themeColor: "#09090B", colorScheme: "dark" as const };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${serif.variable}`}>
+    <html lang="en">
       <body>{children}</body>
     </html>
   );
