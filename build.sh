@@ -31,15 +31,23 @@ fi
 
 clang -fobjc-arc -o "$APP/Contents/MacOS/$EXEC" \
     main.m AppDelegate.m \
-    -framework Cocoa -framework QuartzCore -framework ApplicationServices -framework Carbon -framework Vision
+    -framework Cocoa -framework QuartzCore -framework ApplicationServices -framework Carbon -framework Vision -framework AuthenticationServices
 
-# Sign with a stable self-signed identity if present, so macOS keeps the
-# Accessibility/Screen Recording grants across rebuilds (the designated
-# requirement pins the bundle id + this cert). Falls back to ad-hoc.
-SIGN_ID="Ctrl+Brain Dev"
+# Sign with an explicit identity when provided. Otherwise use the stable
+# self-signed dev identity if present so macOS keeps permission grants across
+# rebuilds. Falls back to ad-hoc for local development only.
+SIGN_ID="${SIGN_IDENTITY:-Ctrl+Brain Dev}"
 if security find-identity -p codesigning 2>/dev/null | grep -q "$SIGN_ID"; then
-    codesign --force --deep --sign "$SIGN_ID" "$APP" >/dev/null 2>&1 && echo "Signed ($SIGN_ID)."
+    CODESIGN_ARGS=(--force --deep --sign "$SIGN_ID")
+    if [ "${APPLE_SIGNING:-0}" = "1" ]; then
+        CODESIGN_ARGS+=(--options runtime --timestamp)
+    fi
+    codesign "${CODESIGN_ARGS[@]}" "$APP" >/dev/null 2>&1 && echo "Signed ($SIGN_ID)."
 else
+    if [ -n "${SIGN_IDENTITY:-}" ]; then
+        echo "error: requested signing identity was not found: $SIGN_IDENTITY" >&2
+        exit 1
+    fi
     codesign --force --deep --sign - "$APP" >/dev/null 2>&1 && echo "Signed (ad-hoc)."
 fi
 
