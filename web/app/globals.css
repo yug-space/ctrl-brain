@@ -1,3 +1,46 @@
+@font-face{
+  font-family:"Space Grotesk";
+  src:url("/fonts/SpaceGrotesk-400.ttf") format("truetype");
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:"Space Grotesk";
+  src:url("/fonts/SpaceGrotesk-500.ttf") format("truetype");
+  font-weight:500;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:"Space Grotesk";
+  src:url("/fonts/SpaceGrotesk-600.ttf") format("truetype");
+  font-weight:600;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:"Space Grotesk";
+  src:url("/fonts/SpaceGrotesk-700.ttf") format("truetype");
+  font-weight:700;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:"Instrument Serif";
+  src:url("/fonts/InstrumentSerif-400.ttf") format("truetype");
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:"Instrument Serif";
+  src:url("/fonts/InstrumentSerif-400-italic.ttf") format("truetype");
+  font-weight:400;
+  font-style:italic;
+  font-display:swap;
+}
+
 :root{
   /* shadcn-style dark (zinc) */
   --bg:#09090B;
@@ -10,8 +53,8 @@
   --line-soft:rgba(255,255,255,.055);
   --accent:#E0A94B;
   --accent-dim:rgba(224,169,75,.16);
-  --sans:var(--font-sans),-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-  --serif:var(--font-serif),Georgia,"Times New Roman",serif;
+  --sans:"Space Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
   --wrap:1080px;
 }
 *{box-sizing:border-box}
