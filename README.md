@@ -50,6 +50,24 @@ open "Ctrl+Brain.app"
 No Xcode project — it compiles with `clang` and is signed with a local
 self-signed identity so permission grants persist across rebuilds.
 
+## Publish Updates
+
+Deploy the website directly to the linked Vercel project:
+
+```bash
+scripts/deploy-web.sh
+```
+
+Build, notarize, and replace the GitHub release DMG:
+
+```bash
+scripts/publish-dmg-release.sh
+```
+
+The release script defaults to `v1.0.0`, uses the `ctrlbrain-notary` notarytool
+profile, and uploads `dist/Ctrl+Brain-1.0.dmg` to the GitHub release. Override
+with `TAG=...`, `REPO=...`, `ASSET_NAME=...`, or `NOTARY_KEYCHAIN_PROFILE=...`.
+
 First run requires macOS permissions (granted once, then they stick):
 
 - **Accessibility** — for reading the selection and the synthetic ⌘C.
@@ -113,6 +131,8 @@ See `mcp/README.md` for a fuller config example.
 | `main.m`, `AppDelegate.{h,m}` | The whole app: hotkey, capture, OCR, describe, upload, viewer, settings |
 | `Info.plist` | Bundle config (`LSUIElement`, app icon) |
 | `build.sh` | `clang` build, ad-hoc/self-signed code-sign, bundles `.env` + logo + icon |
+| `package-dmg.sh` | Developer ID signed/notarized DMG packaging |
+| `scripts/` | Direct website deploy and release upload helpers |
 | `mcp/` | Local stdio MCP server for AI agents |
 | `assets/` | `logo.svg`, generated `AppIcon.icns` |
 | `web/` | Next.js landing site |
