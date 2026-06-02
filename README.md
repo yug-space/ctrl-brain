@@ -8,6 +8,13 @@ A tiny macOS menu-bar agent. Press **⌃⇧2** anywhere and Ctrl+Brain captures 
 selected text, image, or screenshot — OCRs it, describes it with a local model,
 saves it to one editable Markdown document, and syncs it to your Supermemory.
 
+## Requirements
+
+- macOS 13 or newer
+- Xcode Command Line Tools (`xcode-select --install`)
+- A local describe backend: Claude CLI or Codex CLI available on `PATH`
+- Optional: a Supermemory API key for sync
+
 ## What it does
 
 Press **Control+Shift+2** (the shortcut is customizable) anywhere:
@@ -33,6 +40,7 @@ with autosave, and live-updates as new captures arrive.
 ## Build & run
 
 ```bash
+cp .env.example .env # optional, for Supermemory sync / backend selection
 chmod +x build.sh && ./build.sh
 open "Ctrl+Brain.app"
 ```
@@ -60,8 +68,12 @@ Menu-bar icon → **Settings…** (or ⌘,):
 
 The Supermemory API key is read from `SUPERMEMORY_API_KEY`, then from a `.env`
 file (cwd, the app bundle's Resources, the bundle's parent dir,
-`~/SecondBrain/.env`, or `~/.config/ctrlbrain/.env`). Choose the image-describe
-backend at the top of `AppDelegate.m` (`kDescribeBackend` = `claude` or `codex`).
+`~/SecondBrain/.env`, or `~/.config/ctrlbrain/.env`).
+
+Set `CTRL_BRAIN_DESCRIBE_BACKEND=claude` or `CTRL_BRAIN_DESCRIBE_BACKEND=codex`
+to choose the image-description backend. Ctrl+Brain searches common Homebrew,
+npm, nvm, asdf, bun, cargo, and local-bin paths so GUI launches can still find
+the selected CLI.
 
 ## Project layout
 
@@ -71,7 +83,9 @@ backend at the top of `AppDelegate.m` (`kDescribeBackend` = `claude` or `codex`)
 | `Info.plist` | Bundle config (`LSUIElement`, app icon) |
 | `build.sh` | `clang` build, ad-hoc/self-signed code-sign, bundles `.env` + logo + icon |
 | `assets/` | `logo.svg`, generated `AppIcon.icns` |
+| `web/` | Next.js landing site |
 | `landing/` | Marketing landing page (`index.html`, `styles.css`, `logo.svg`) |
+| `.env.example` | Local configuration template |
 
 ## Landing page
 
@@ -80,3 +94,9 @@ A self-contained marketing page lives in `landing/`. Open it directly:
 ```bash
 open landing/index.html
 ```
+
+## Open source
+
+Ctrl+Brain is released under the MIT License. See `CONTRIBUTING.md`,
+`SECURITY.md`, and `THIRD_PARTY_NOTICES.md` before opening issues or pull
+requests.

@@ -98,11 +98,54 @@ static NSString *const kHotKeyModsDefaultsKey = @"CBHotKeyMods";   // Carbon mod
 static NSString *const kHotKeyLabelDefaultsKey = @"CBHotKeyLabel"; // display label, e.g. "2"
 static NSString *const kCaptureDir = @"SecondBrain/captures";
 static NSString *const kBrainFile = @"SecondBrain.mdx";
-static NSString *const kDescribeBackend = @"claude";
-static NSString *const kClaudeBinary = @"/Users/yugg/.local/bin/claude";
-static NSString *const kCodexBinary = @"/Users/yugg/.nvm/versions/node/v24.11.0/bin/codex";
-static NSString *const kExtraPATH =
-    @"/opt/homebrew/bin:/usr/local/bin:%@/.local/bin:%@/.claude/local:%@/.bun/bin:%@/.npm-global/bin:%@/.nvm/versions/node/v24.11.0/bin";
+static NSString *const kDefaultDescribeBackend = @"claude";
+
+static NSString *CBDescribeBackend(void) {
+    NSString *backend = NSProcessInfo.processInfo.environment[@"CTRL_BRAIN_DESCRIBE_BACKEND"];
+    if (!backend.length) backend = CBDotEnvValue(@"CTRL_BRAIN_DESCRIBE_BACKEND");
+    backend = [[backend stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet] lowercaseString];
+    return [backend isEqualToString:@"codex"] ? @"codex" : kDefaultDescribeBackend;
+}
+
+static void CBAddPathComponent(NSMutableArray<NSString *> *paths, NSMutableSet<NSString *> *seen, NSString *path) {
+    if (!path.length || [seen containsObject:path]) return;
+    [paths addObject:path];
+    [seen addObject:path];
+}
+
+static NSString *CBToolSearchPath(void) {
+    NSString *home = NSHomeDirectory();
+    NSMutableArray<NSString *> *paths = [NSMutableArray array];
+    NSMutableSet<NSString *> *seen = [NSMutableSet set];
+
+    NSArray<NSString *> *base = @[
+        @"/opt/homebrew/bin",
+        @"/usr/local/bin",
+        @"/usr/bin",
+        @"/bin",
+        @"/usr/sbin",
+        @"/sbin",
+        [home stringByAppendingPathComponent:@".local/bin"],
+        [home stringByAppendingPathComponent:@".claude/local"],
+        [home stringByAppendingPathComponent:@".bun/bin"],
+        [home stringByAppendingPathComponent:@".npm-global/bin"],
+        [home stringByAppendingPathComponent:@".cargo/bin"],
+        [home stringByAppendingPathComponent:@".nodenv/shims"],
+        [home stringByAppendingPathComponent:@".asdf/shims"]
+    ];
+    for (NSString *path in base) CBAddPathComponent(paths, seen, path);
+
+    NSString *nvmDir = [home stringByAppendingPathComponent:@".nvm/versions/node"];
+    NSArray<NSString *> *versions = [NSFileManager.defaultManager contentsOfDirectoryAtPath:nvmDir error:nil];
+    for (NSString *version in versions) {
+        CBAddPathComponent(paths, seen, [[nvmDir stringByAppendingPathComponent:version] stringByAppendingPathComponent:@"bin"]);
+    }
+
+    for (NSString *path in [NSProcessInfo.processInfo.environment[@"PATH"] componentsSeparatedByString:@":"]) {
+        CBAddPathComponent(paths, seen, path);
+    }
+    return [paths componentsJoinedByString:@":"];
+}
 
 static EventHotKeyRef gHotKeyRef;
 static __weak AppDelegate *gDelegate;
@@ -624,17 +667,14 @@ static BOOL CBIsMetaLine(NSString *t) {
 
     NSTask *task = [[NSTask alloc] init];
     task.launchPath = @"/usr/bin/env";
-    if ([kDescribeBackend isEqualToString:@"codex"]) {
-        task.arguments = @[kCodexBinary, @"exec", prompt];
+    if ([CBDescribeBackend() isEqualToString:@"codex"]) {
+        task.arguments = @[@"codex", @"exec", prompt];
     } else {
-        task.arguments = @[kClaudeBinary, @"-p", prompt, @"--allowedTools", @"Read"];
+        task.arguments = @[@"claude", @"-p", prompt, @"--allowedTools", @"Read"];
     }
 
     NSMutableDictionary *env = [NSProcessInfo.processInfo.environment mutableCopy];
-    NSString *home = NSHomeDirectory();
-    NSString *extra = [NSString stringWithFormat:kExtraPATH, home, home, home, home, home];
-    NSString *basePath = env[@"PATH"] ?: @"/usr/bin:/bin";
-    env[@"PATH"] = [NSString stringWithFormat:@"%@:%@", extra, basePath];
+    env[@"PATH"] = CBToolSearchPath();
     task.environment = env;
 
     NSPipe *out = [NSPipe pipe];
