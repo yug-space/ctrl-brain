@@ -1701,7 +1701,7 @@ static BOOL CBIsMetaLine(NSString *t) {
     title2.frame = NSMakeRect(leftX, 318, leftW, 46);
     [root addSubview:title2];
 
-    NSTextField *sub = [self settingsLabel:@"Add your Supermemory key to sync captures. Everything else stays on your Mac."
+    NSTextField *sub = [self settingsLabel:@"Save locally by default. Add Supermemory only if you want cloud sync."
                                       font:[self sg:13.5 weight:NSFontWeightRegular]
                                      color:muted];
     sub.maximumNumberOfLines = 3;
@@ -1716,8 +1716,8 @@ static BOOL CBIsMetaLine(NSString *t) {
                                 symbol:@"lock"
                              highlight:NO
                                  frame:NSMakeRect(leftX, 120, leftW, 46)]];
-    [root addSubview:[self onboardRow:@"Synced when ready"
-                                symbol:@"arrow.triangle.2.circlepath"
+    [root addSubview:[self onboardRow:@"Available to local MCP agents"
+                                symbol:@"point.3.connected.trianglepath.dotted"
                              highlight:NO
                                  frame:NSMakeRect(leftX, 62, leftW, 46)]];
 
@@ -1738,14 +1738,14 @@ static BOOL CBIsMetaLine(NSString *t) {
     [panel addSubview:sec];
     [panel addSubview:[self divider:NSMakeRect(px, panelH - 70, pw, 1)]];
 
-    NSTextField *panelTitle = [self settingsLabel:@"Connect Supermemory"
+    NSTextField *panelTitle = [self settingsLabel:@"Local-first setup"
                                             font:[self sg:21 weight:NSFontWeightSemibold]
                                            color:white];
     panelTitle.maximumNumberOfLines = 1;
     panelTitle.frame = NSMakeRect(px, panelH - 112, pw, 28);
     [panel addSubview:panelTitle];
 
-    NSTextField *panelSub = [self settingsLabel:@"Paste your key and choose a tag for synced captures."
+    NSTextField *panelSub = [self settingsLabel:@"Supermemory sync is optional. Leave the key blank for local-only MCP use."
                                           font:[self sg:12.5 weight:NSFontWeightRegular]
                                          color:muted];
     panelSub.maximumNumberOfLines = 2;
@@ -1753,7 +1753,7 @@ static BOOL CBIsMetaLine(NSString *t) {
     [panel addSubview:panelSub];
 
     // API key.
-    NSTextField *akLabel = [self settingsLabel:@"Supermemory API key"
+    NSTextField *akLabel = [self settingsLabel:@"Supermemory API key (optional)"
                                           font:[self sg:13 weight:NSFontWeightSemibold]
                                          color:labelCol];
     akLabel.frame = NSMakeRect(px, 267, pw, 18);
@@ -1775,13 +1775,13 @@ static BOOL CBIsMetaLine(NSString *t) {
     [panel addSubview:[self flatFieldBox:self.onboardContainerField frame:NSMakeRect(px, 122, pw, 44)]];
 
     // Primary action — white, like the site's hero button.
-    NSButton *start = [self filledButton:@"Start capturing  →" action:@selector(finishOnboarding:)
+    NSButton *start = [self filledButton:@"Start local brain  →" action:@selector(finishOnboarding:)
                                       bg:CBColor(250, 250, 250, 1.0) fg:CBColor(10, 10, 10, 1.0)];
     start.frame = NSMakeRect(px, 54, pw, 48);
     start.keyEquivalent = @"\r";
     [panel addSubview:start];
 
-    NSButton *getKey = [self linkButton:@"Get a free key at supermemory.ai  ↗"
+    NSButton *getKey = [self linkButton:@"Optional: get a Supermemory key  ↗"
                                  action:@selector(openSupermemorySite:)
                                   color:muted];
     getKey.frame = NSMakeRect(px, 24, pw, 18);

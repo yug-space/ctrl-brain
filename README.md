@@ -6,7 +6,8 @@
 
 A tiny macOS menu-bar agent. Press **⌃⇧2** anywhere and Ctrl+Brain captures the
 selected text, image, or screenshot — OCRs it, describes it with a local model,
-saves it to one editable Markdown document, and syncs it to your Supermemory.
+and saves it to one editable Markdown document. Supermemory sync is optional;
+local AI agents can use the bundled MCP server instead.
 
 ## Requirements
 
@@ -14,6 +15,7 @@ saves it to one editable Markdown document, and syncs it to your Supermemory.
 - Xcode Command Line Tools (`xcode-select --install`)
 - A local describe backend: Claude CLI or Codex CLI available on `PATH`
 - Optional: a Supermemory API key for sync
+- Optional: Node.js for the local MCP server
 
 ## What it does
 
@@ -26,8 +28,7 @@ Press **Control+Shift+2** (the shortcut is customizable) anywhere:
 - **Nothing selected?** The native screenshot picker opens; the region you grab
   is captured the same way.
 
-Everything lands in one rolling, **editable** document and uploads to
-Supermemory:
+Everything lands in one rolling, **editable** local document:
 
 ```
 ~/SecondBrain/captures/SecondBrain.mdx
@@ -35,7 +36,8 @@ Supermemory:
 
 Open the menu-bar item → **Open** to browse it. The viewer renders the Markdown
 cleanly (headings, captions, inline images — no raw syntax), is fully editable
-with autosave, and live-updates as new captures arrive.
+with autosave, and live-updates as new captures arrive. If you set a
+Supermemory API key, captures also sync there.
 
 ## Build & run
 
@@ -77,8 +79,9 @@ the selected CLI.
 
 ## Local MCP
 
-Ctrl+Brain ships a local stdio MCP server so any MCP-capable AI agent can read,
-search, and append notes to the same Markdown brain:
+Ctrl+Brain ships a local stdio MCP server for users who do not use Supermemory,
+or for anyone who wants MCP-capable AI agents to read, search, and append notes
+to the same Markdown brain directly:
 
 ```json
 {
@@ -100,6 +103,8 @@ By default it uses:
 Override that path with `CTRL_BRAIN_FILE` if needed. Available tools:
 `brain_status`, `read_brain`, `tail_brain`, `search_brain`, and
 `append_brain`.
+
+See `mcp/README.md` for a fuller config example.
 
 ## Project layout
 

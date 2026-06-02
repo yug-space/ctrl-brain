@@ -75,7 +75,7 @@ export default function Home() {
             <div className="pillar">
               <div className="n">03</div>
               <h3>Remember</h3>
-              <p>One editable Markdown brain, synced to Supermemory so your agents can recall it later.</p>
+              <p>One editable Markdown brain that local MCP agents can read, search, and append to. Supermemory sync is optional.</p>
             </div>
           </div>
         </section>
@@ -104,7 +104,7 @@ export default function Home() {
             <div className="step"><div className="n">01</div><div><h4>Select anything</h4><p>Highlight text, copy an image, or trigger it on any screen.</p></div></div>
             <div className="step"><div className="n">02</div><div><h4>Press ⌃⇧2</h4><p>The selection is read via the Accessibility API — globally, in any app.</p></div></div>
             <div className="step"><div className="n">03</div><div><h4>Understood on-device</h4><p>Vision OCRs images; a local Claude/Codex model describes them. Nothing leaves your Mac.</p></div></div>
-            <div className="step"><div className="n">04</div><div><h4>Saved &amp; synced</h4><p>Appended to your editable second brain and uploaded to Supermemory.</p></div></div>
+            <div className="step"><div className="n">04</div><div><h4>Saved locally</h4><p>Appended to your editable second brain, available to local MCP agents, and synced to Supermemory only if you add a key.</p></div></div>
           </div>
         </section>
       </main>
@@ -114,6 +114,7 @@ export default function Home() {
           <a className="brand" href="#top"><Logo size={28} /><span className="wm">ctrl<span className="p">+</span>brain</span></a>
           <div className="links">
             <a href={GITHUB} target="_blank" rel="noopener">GitHub</a>
+            <a href={GITHUB + "/tree/main/mcp"} target="_blank" rel="noopener">Local MCP</a>
             <a href="https://supermemory.ai" target="_blank" rel="noopener">Supermemory</a>
             <a href="#how">How it works</a>
           </div>
