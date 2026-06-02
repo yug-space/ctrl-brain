@@ -84,16 +84,7 @@ the selected CLI.
 | `build.sh` | `clang` build, ad-hoc/self-signed code-sign, bundles `.env` + logo + icon |
 | `assets/` | `logo.svg`, generated `AppIcon.icns` |
 | `web/` | Next.js landing site |
-| `landing/` | Marketing landing page (`index.html`, `styles.css`, `logo.svg`) |
 | `.env.example` | Local configuration template |
-
-## Landing page
-
-A self-contained marketing page lives in `landing/`. Open it directly:
-
-```bash
-open landing/index.html
-```
 
 ## Open source
 
