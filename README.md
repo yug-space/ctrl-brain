@@ -75,6 +75,32 @@ to choose the image-description backend. Ctrl+Brain searches common Homebrew,
 npm, nvm, asdf, bun, cargo, and local-bin paths so GUI launches can still find
 the selected CLI.
 
+## Local MCP
+
+Ctrl+Brain ships a local stdio MCP server so any MCP-capable AI agent can read,
+search, and append notes to the same Markdown brain:
+
+```json
+{
+  "mcpServers": {
+    "ctrl-brain": {
+      "command": "node",
+      "args": ["/path/to/ctrl-brain/mcp/ctrl-brain-mcp.js"]
+    }
+  }
+}
+```
+
+By default it uses:
+
+```text
+~/SecondBrain/captures/SecondBrain.mdx
+```
+
+Override that path with `CTRL_BRAIN_FILE` if needed. Available tools:
+`brain_status`, `read_brain`, `tail_brain`, `search_brain`, and
+`append_brain`.
+
 ## Project layout
 
 | File | Role |
@@ -82,6 +108,7 @@ the selected CLI.
 | `main.m`, `AppDelegate.{h,m}` | The whole app: hotkey, capture, OCR, describe, upload, viewer, settings |
 | `Info.plist` | Bundle config (`LSUIElement`, app icon) |
 | `build.sh` | `clang` build, ad-hoc/self-signed code-sign, bundles `.env` + logo + icon |
+| `mcp/` | Local stdio MCP server for AI agents |
 | `assets/` | `logo.svg`, generated `AppIcon.icns` |
 | `web/` | Next.js landing site |
 | `.env.example` | Local configuration template |
