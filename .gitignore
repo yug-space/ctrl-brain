@@ -1,0 +1,13 @@
+# secrets — never commit
+.env
+.env.local
+*.env
+
+# build output
+Ctrl+Brain.app/
+*.app/
+SecondBrainCapture.app/
+*.iconset/
+
+# macOS
+.DS_Store
